@@ -425,6 +425,8 @@ int block_load_line(char *line, char **name,
 		typed=code;	
 	} else if(!strcmp(tok, "bytedata")) {
 		typed=bytedata;
+	} else if(!strcmp(tok, "stringdata")) {
+		typed=stringdata;
 	} else if(!strcmp(tok, "worddata")) {
 		typed=worddata;
 	} else if(!strcmp(tok, "pointers")) {

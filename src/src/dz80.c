@@ -790,6 +790,17 @@ int diz80_bytedata()
 	return 1;
 }
 
+/*
+ * For now; consuming more than the t[] array of up to
+ * six bytes for an instruction is .. not enough.
+ */
+int diz80_stringdata()
+{
+	CS(1);
+	FP("defb 0%02xh", t[0]);
+	return 1;
+}
+
 int diz80_worddata()
 {
 	if(t[1]==-1) {
@@ -843,6 +854,7 @@ int disassemble()
 	switch(shiftin_blk->type) {
 		case code:	return diz80_code();
 		case bytedata:	return diz80_bytedata();
+		case stringdata:	return diz80_stringdata();
 		case worddata:	return diz80_worddata();
 		case pointers:	return diz80_pointers();
 	}

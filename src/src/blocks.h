@@ -17,6 +17,7 @@
 enum blocktype {
 	code,
 	bytedata,
+	stringdata,
 	worddata,
 	pointers
 };
