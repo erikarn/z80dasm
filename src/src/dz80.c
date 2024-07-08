@@ -30,7 +30,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "utils.h"
 #include "col.h"
 
-#define T_SIZE	6
+#define T_SIZE		8
 
 /* Might be self-modifying code. */
 int f_smc = 0;
@@ -178,10 +178,16 @@ int ckrange_rel(int skip, int pc, char *str)
 	}
 }
 
-/* Outputs n bytes as a defb line. Used for invalid/unknown instructions, etc.
+/*
+ * Outputs n bytes as a defb line. Used for invalid/unknown instructions, etc.
  * If n == -1, then outputs bytes until the end of block.
  *
- * Returns number of bytes used. */
+ * Note: the end of block is t[i] == -1, which currently for a full
+ * block does not at all happen.  So don't just call defb(-1) if
+ * the t[] array is full!
+ *
+ * Returns number of bytes used.
+ */
 int defb(int n)
 {
 	int i;
@@ -785,9 +791,39 @@ return(a);
 
 int diz80_bytedata()
 {
+#if 1
 	CS(1);
-	FP("defb 0%02xh", t[0]);
+	FP("defb");
+	FP("%c0%02xh", ' ', t[0]);
 	return 1;
+#endif
+
+	/*
+	 * This consumes up to T_SIZE bytes and will
+	 * generate a bulk defb array.
+	 *
+	 * It has the unfun side-effect right now
+	 * of not generating a label if something
+	 * references this.
+	 *
+	 * I have a feeling I need to add a new type,
+	 * something like "bytearray" or something,
+	 * and figure out how to populate symbol ranges
+	 * so it will generate a label + offset.
+	 */
+#if 0
+	int i;
+
+	CS(1);
+	FP("defb");
+
+	for (i = 0; t[i] != -1 && i < T_SIZE; i++) {
+		FP("%c0%02xh", i == 0 ? ' ' : ',', t[i]);
+	}
+
+	return i;
+#endif
+
 }
 
 /*
